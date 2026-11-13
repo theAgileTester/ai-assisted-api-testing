@@ -65,21 +65,22 @@ Performance and load testing, UI testing, live (non-test-mode) payments.
 ### Known risks
 - Demo APIs accept any payload, so a passing test proves little without body assertions.
 - AI may present third-party sources as official docs.
-- Tests currently run from the conda environment, not the project `.venv`.
+- Time-dependent data (e.g. exchange-rate dates) can make tests fail depending on when they run.
 
 ### Progress
-Week 1: workflow set up, first tests drafted and reviewed, Stripe test ideas reviewed. See `AI_FINDINGS.md`.
+Week 1: workflow set up; all existing tests run (pytest 4/4 passed, Postman 7/8 passed); Stripe test ideas reviewed. See `AI_FINDINGS.md`.
 
 ## Test Cases
 
-Status: **Automated** = test code exists · **Designed** = idea reviewed, not yet coded · **Not run** = code exists but results not yet reviewed
+Status: **Run** = executed and results reviewed · **Designed** = idea reviewed, not yet coded
 
 ### AI-generated (reviewed by human)
 
 | ID | API | Test case | Expected result | Source | Verdict | Status |
 |----|-----|-----------|-----------------|--------|---------|--------|
-| F1–F8 | Frankfurter | 8 ideas for `GET /latest` (structure, base, symbols, amount, date, rates) | See Postman collection | AI, no docs given | ⏳ | Not run |
-| R1 | ReqRes | Create a customer (POST `/users`) | 201 | ReqRes docs | ✏️ assertion only checked status | Automated |
+| F1–F8 | Frankfurter | 8 Postman ideas for `GET /latest` (structure, base, symbols, amount, date, rates) | See Postman collection | AI, no docs given | ✅ 6 · ✏️ F4 weak · ✏️ F6 wrong assumption | Run — 7 passed, F6 failed |
+| FP1–FP3 | Frankfurter | 3 pytest tests: structure, USD→GBP, invalid base | 200 + fields; only GBP; 4xx | AI | ✏️ invalid-base test accepts any 4xx | Run — 3 passed |
+| R1 | ReqRes | Create a customer (POST `/users`) | 201 | ReqRes docs | ✏️ assertion only checked status | Run — passed |
 | C1 | Stripe | Create customer with name + email | 200, `id` starts with `cus_`, email echoed | Stripe docs | ✅ | Designed |
 | C2 | Stripe | Create customer with no fields | 200 — no required fields | Stripe docs | ✏️ raises requirement question | Designed |
 | C3 | Stripe | Customer created with test key | `livemode` = false | Stripe docs | ✅ | Designed |
@@ -102,4 +103,4 @@ Status: **Automated** = test code exists · **Designed** = idea reviewed, not ye
 | C6b | Stripe | Tax calculation without address | Error — to be confirmed | Negative side of C6a |
 | P8 | Stripe | £30.00 with an insufficient-funds test card | 402, `decline_code` = `insufficient_funds`, `amount_received` = 0 | Real payment risk AI missed |
 
-**Summary:** 14 AI test ideas reviewed (7 ✅, 6 ✏️, 1 ⏳) · 4 cases added by the human tester, all for payment risks or weak assertions the AI missed.
+**Summary:** 24 AI-generated tests and ideas reviewed (8 Postman, 3 pytest, 1 ReqRes, 12 Stripe) · 4 cases added by the human tester, all for payment risks or weak assertions the AI missed.
