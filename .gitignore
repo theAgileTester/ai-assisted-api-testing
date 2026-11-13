@@ -1,0 +1,16 @@
+# Secrets / local config
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Test output
+.pytest_cache/
+reports/
+
+# macOS / editors
+.DS_Store
+.vscode/

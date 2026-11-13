@@ -1,0 +1,199 @@
+{
+  "info": {
+    "name": "Frankfurter API - AI-generated tests",
+    "description": "AI-Assisted API Testing (Fintech). Tests written by AI from 8 test ideas; every result must be reviewed by a human before it is trusted.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 Latest - response structure",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/latest"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Body has amount, base, date, rates\", () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body).to.have.keys(\"amount\", \"base\", \"date\", \"rates\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Latest - default base is EUR",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/latest"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Default base is EUR\", () => {",
+              "    pm.expect(pm.response.json().base).to.eql(\"EUR\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 USD to GBP - only GBP returned",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/latest?base=USD&symbols=GBP"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Base is USD\", () => pm.expect(pm.response.json().base).to.eql(\"USD\"));",
+              "pm.test(\"Rates contain only GBP\", () => {",
+              "    pm.expect(Object.keys(pm.response.json().rates)).to.eql([\"GBP\"]);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Invalid base currency - 4xx with message",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/latest?base=XXX"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status is 4xx\", () => {",
+              "    pm.expect(pm.response.code).to.be.within(400, 499);",
+              "});",
+              "pm.test(\"Error body has a message\", () => {",
+              "    pm.expect(pm.response.json()).to.have.property(\"message\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Amount=100 multiplies rates by 100",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/latest?base=USD&symbols=GBP&amount=100"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const scaled = pm.response.json().rates.GBP;",
+              "pm.sendRequest(pm.variables.get(\"baseUrl\") + \"/latest?base=USD&symbols=GBP\", (err, res) => {",
+              "    const single = res.json().rates.GBP;",
+              "    pm.test(\"GBP rate for 100 USD = 100 x rate for 1 USD\", () => {",
+              "        pm.expect(scaled).to.be.closeTo(single * 100, 0.01);",
+              "    });",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 Date equals today",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/latest"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"date equals today's date\", () => {",
+              "    const today = new Date().toISOString().slice(0, 10);",
+              "    pm.expect(pm.response.json().date).to.eql(today);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 All rates are positive numbers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/latest"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Every rate is a positive number\", () => {",
+              "    const rates = pm.response.json().rates;",
+              "    Object.entries(rates).forEach(([code, value]) => {",
+              "        pm.expect(value, code).to.be.a(\"number\").and.to.be.above(0);",
+              "    });",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 Base currency not inside rates",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/latest"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Base currency is not a key in rates\", () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.rates).to.not.have.property(body.base);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.frankfurter.dev/v1"
+    }
+  ]
+}
