@@ -34,3 +34,8 @@ Counted per test idea / output (F1–F8 row = 6 outputs). Open (⏳) items are n
 | 1    | 22 (+2 open)     | 9  | 13 | 0  | 41%             |
 
 **Week 1 insight:** Most fixes were weak assertions and wrong/unverified sources. AI listed documented parameters well but missed real payment risks (insufficient funds, tax/address case) — those were added by the human reviewer. Running the tests raised the acceptance rate: several AI ideas turned out correct only once actually executed.
+| 2026-11-16 | Stripe key setup | ✅ | Real test key in `.env` only. Verified: `git status` shows only `.env.example` changed; `git grep sk_test` finds only the placeholder. | — |
+| 2026-11-16 | Stripe Customer CRUD tests (4) | ✅ | All 4 passed first time against Stripe test mode. Update uses POST — matches Stripe docs, not invented. | — |
+| 2026-11-16 | CRUD: read-after-delete assertion | ✅ | AI marked it [ASSUMPTION]; confirmed by running, not by docs. | assumption |
+| 2026-11-16 | CRUD: fixture cleanup | ⏳ | Teardown DELETE doesn't check the response (silent failure risk). Cleanup NOT yet verified: Dashboard showed 0 customers, but in a different sandbox — key in `.env` (…03zP) doesn't match that sandbox's key. | silent failure / wrong environment |
+| 2026-11-16 | AI review of cleanup evidence | ✏️ | AI concluded "0 customers = cleanup works" without checking which sandbox the key belonged to. Caught by human reviewer. | wrong assumption |
