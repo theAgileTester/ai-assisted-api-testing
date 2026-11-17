@@ -38,6 +38,11 @@ This log records what the AI got right, what had to be fixed, and why.
 | 16 Nov | Stripe: read after delete | Kept | AI marked it as an assumption. Running the test confirmed it. | — |
 | 16 Nov | Stripe: test data cleanup | Open | Cleanup doesn't check if the delete worked. Not yet verified: the Dashboard I checked was a different sandbox from the test key. | Silent failure |
 | 16 Nov | AI check of cleanup | Fixed | AI said "0 customers, cleanup works" without checking which sandbox the key belonged to. I caught it. | Wrong assumption |
+| 16 Nov | AI wording in this log | Fixed | AI suggested writing part of the Stripe key in this public file. Removed it. | Secret exposure |
+| 17 Nov | Stripe: successful payment test | Fixed | First run failed: AI used `payment_method_types`, which Stripe no longer supports. Replaced with automatic payment methods, then it passed. | Outdated info |
+| 17 Nov | Stripe tests: key handling | Fixed | When a test failed, pytest printed the full secret key. Key rotated. The test now hides the key inside a session object. | Secret exposure |
+| 17 Nov | Stripe: status flow in the ticket | Kept | `requires_confirmation → succeeded` confirmed, but only because the card was attached when the payment was created. | — |
+| 17 Nov | Stripe: amount received vs net | Kept | `amount_received` = 2000 (£20.00) is what the customer paid; net after Stripe fee was £19.17. Tests check the charge, not the payout. | — |
 
 ## Weekly metrics
 
