@@ -47,6 +47,10 @@ This log records what the AI got right, what had to be fixed, and why.
 | 19 Nov | Card rule in the prompt | Kept | Asking AI to use only Stripe's test-cards page made it flag the token as NOT FOUND. But AI still put a guessed token in the code. | — |
 | 19 Nov | Insufficient-funds decline test | Kept | Passed first time: 402, card_declined, insufficient_funds, nothing charged. Dashboard confirms card ending 9995. | — |
 | 19 Nov | Test card token | Fixed | AI used `pm_card_chargeDeclinedInsufficientFunds`, which is not on Stripe's test-cards page. It worked anyway, probably as an undocumented alias. Replaced with the documented `pm_card_visa_chargeDeclinedInsufficientFunds`. | Invented value |
+| 19 Nov | Amount test prompt | — | Written by AI, not by me (time-limited day). | — |
+| 19 Nov | Amount edge cases: GBP (6 rows) | Kept | All passed first time, including min £0.30, zero, negative and decimal. | — |
+| 19 Nov | Amount edge cases: JPY minimum | Fixed | ¥50 and ¥51 were rejected: our account settles in GBP, so the amount must also convert to at least 30p. The docs table alone wasn't enough. Redesigned the JPY rows to avoid an exchange-rate-dependent (flaky) boundary. | Missing context |
+| 19 Nov | JPY zero-decimal rule | Kept | Confirmed by Stripe's error: it read 50 as ¥50. | — |
 
 ## Weekly metrics
 
