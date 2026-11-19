@@ -43,6 +43,10 @@ This log records what the AI got right, what had to be fixed, and why.
 | 17 Nov | Stripe tests: key handling | Fixed | When a test failed, pytest printed the full secret key. Key rotated. The test now hides the key inside a session object. | Secret exposure |
 | 17 Nov | Stripe: status flow in the ticket | Kept | `requires_confirmation → succeeded` confirmed, but only because the card was attached when the payment was created. | — |
 | 17 Nov | Stripe: amount received vs net | Kept | `amount_received` = 2000 (£20.00) is what the customer paid; net after Stripe fee was £19.17. Tests check the charge, not the payout. | — |
+| 19 Nov | Decline test: my first prompt | Fixed | My first prompt mixed a decline test with an amount limit test, said "decline the payment" (the bank declines, not us), had a vague expected result, and would have overwritten an existing file. | Prompt gap |
+| 19 Nov | Card rule in the prompt | Kept | Asking AI to use only Stripe's test-cards page made it flag the token as NOT FOUND. But AI still put a guessed token in the code. | — |
+| 19 Nov | Insufficient-funds decline test | Kept | Passed first time: 402, card_declined, insufficient_funds, nothing charged. Dashboard confirms card ending 9995. | — |
+| 19 Nov | Test card token | Fixed | AI used `pm_card_chargeDeclinedInsufficientFunds`, which is not on Stripe's test-cards page. It worked anyway, probably as an undocumented alias. Replaced with the documented `pm_card_visa_chargeDeclinedInsufficientFunds`. | Invented value |
 
 ## Weekly metrics
 
