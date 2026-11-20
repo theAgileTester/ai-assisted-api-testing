@@ -59,5 +59,23 @@ Counted per AI output. Open items are not counted.
 | Week | Reviewed | Kept | Fixed | Rejected | Kept as written |
 |------|----------|------|-------|----------|-----------------|
 | 1 | 22 | 9 | 13 | 0 | 41% |
+| 2 | 15 | 9 | 6 | 0 | 60% |
 
 **Week 1 takeaway:** Most fixes were weak assertions and unverified sources. AI listed the documented parameters well but missed real payment risks, which I added. Running the tests raised the score: some AI ideas turned out to be correct only once they were run.
+
+**Week 2 takeaway:** The share of AI output I could use without changes rose from 41% to 60%,
+most likely because my prompts now state the context and rules up front (official sources only,
+current API parameters, how to hide the key). The most serious AI mistake was a test that printed
+the Stripe secret key when it failed; the key was rotated and the fixture redesigned. The JPY case
+showed that docs tables can miss context: our account settles in GBP, so a ¥50 charge is rejected
+even though ¥50 is the listed minimum.
+
+### Week 2 test results (first run, per test case)
+
+| Feature | Test cases | Passed first run | Wrong assertions |
+|---------|------------|------------------|------------------|
+| Customer CRUD | 4 | 4 | 0 |
+| Successful payment | 1 | 0 | 0 |
+| Card decline | 1 | 1 | 0 |
+| Amount edge cases | 12 | 10 | 2 |
+| **Total** | **18** | **15 (83%)** | **2 (11%)** |
