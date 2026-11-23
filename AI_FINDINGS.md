@@ -51,6 +51,7 @@ This log records what the AI got right, what had to be fixed, and why.
 | 19 Nov | Amount edge cases: GBP (6 rows) | Kept | All passed first time, including min £0.30, zero, negative and decimal. | — |
 | 19 Nov | Amount edge cases: JPY minimum | Fixed | ¥50 and ¥51 were rejected: our account settles in GBP, so the amount must also convert to at least 30p. The docs table alone wasn't enough. Redesigned the JPY rows to avoid an exchange-rate-dependent (flaky) boundary. | Missing context |
 | 19 Nov | JPY zero-decimal rule | Kept | Confirmed by Stripe's error: it read 50 as ¥50. | — |
+| 23 Nov | Stripe: customer tests key handling | Fixed | The customer tests from 16 Nov still passed the raw key to each test, so a failure could print it. Switched to the same session fixture as the payment tests. | Secret exposure |
 
 ## Weekly metrics
 

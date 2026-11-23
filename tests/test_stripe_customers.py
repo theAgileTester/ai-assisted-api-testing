@@ -9,20 +9,22 @@ TIMEOUT = 10
 
 
 @pytest.fixture(scope="session")
-def stripe_auth():
+def stripe():
+    # The key lives inside the session, so it never appears in test output
     key = os.getenv("STRIPE_SECRET_KEY")
     if not key or not key.startswith("sk_test_"):
         pytest.skip("STRIPE_SECRET_KEY missing or not a TEST key")
-    return (key, "")
+    session = requests.Session()
+    session.auth = (key, "")
+    return session
 
 
 @pytest.fixture
-def customer(stripe_auth):
+def customer(stripe):
     email = f"qa-{uuid.uuid4().hex[:8]}@example.com"
-    response = requests.post(
+    response = stripe.post(
         f"{STRIPE_URL}/customers",
         data={"name": "Jane Doe", "email": email},
-        auth=stripe_auth,
         timeout=TIMEOUT,
     )
     assert response.status_code == 200, response.text
@@ -30,7 +32,7 @@ def customer(stripe_auth):
 
     yield created
 
-    requests.delete(f"{STRIPE_URL}/customers/{created['id']}", auth=stripe_auth, timeout=TIMEOUT)
+    stripe.delete(f"{STRIPE_URL}/customers/{created['id']}", timeout=TIMEOUT)
 
 
 def test_create_customer(customer):
@@ -41,8 +43,8 @@ def test_create_customer(customer):
     assert customer["livemode"] is False
 
 
-def test_read_customer(customer, stripe_auth):
-    response = requests.get(f"{STRIPE_URL}/customers/{customer['id']}", auth=stripe_auth, timeout=TIMEOUT)
+def test_read_customer(customer, stripe):
+    response = stripe.get(f"{STRIPE_URL}/customers/{customer['id']}", timeout=TIMEOUT)
 
     assert response.status_code == 200
     body = response.json()
@@ -50,11 +52,10 @@ def test_read_customer(customer, stripe_auth):
     assert body["email"] == customer["email"]
 
 
-def test_update_customer(customer, stripe_auth):
-    response = requests.post(
+def test_update_customer(customer, stripe):
+    response = stripe.post(
         f"{STRIPE_URL}/customers/{customer['id']}",
         data={"name": "Jane Smith"},
-        auth=stripe_auth,
         timeout=TIMEOUT,
     )
 
@@ -62,12 +63,12 @@ def test_update_customer(customer, stripe_auth):
     assert response.json()["name"] == "Jane Smith"
 
 
-def test_delete_customer(customer, stripe_auth):
-    response = requests.delete(f"{STRIPE_URL}/customers/{customer['id']}", auth=stripe_auth, timeout=TIMEOUT)
+def test_delete_customer(customer, stripe):
+    response = stripe.delete(f"{STRIPE_URL}/customers/{customer['id']}", timeout=TIMEOUT)
 
     assert response.status_code == 200
     assert response.json()["deleted"] is True
 
-    # [ASSUMPTION] reading a deleted customer still returns 200 with deleted=true
-    after = requests.get(f"{STRIPE_URL}/customers/{customer['id']}", auth=stripe_auth, timeout=TIMEOUT)
+    # Confirmed by running (16 Nov): reading a deleted customer returns deleted=true
+    after = stripe.get(f"{STRIPE_URL}/customers/{customer['id']}", timeout=TIMEOUT)
     assert after.json().get("deleted") is True
