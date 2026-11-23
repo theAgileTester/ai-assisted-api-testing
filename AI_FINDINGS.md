@@ -58,6 +58,7 @@ This log records what the AI got right, what had to be fixed, and why.
 |------|-----------|--------|---------------|--------------|
 | 23 Nov | Stripe: customer tests key handling | Fixed | The customer tests from 16 Nov still passed the raw key to each test, so a failure could print it. Switched to the same session fixture as the payment tests. | Secret exposure |
 | 23 Nov | My expected results for idempotency | Fixed | I guessed a repeat request would return an error; Stripe docs say it returns the same result. 1 of my 3 guesses was right — expected results must come from the docs. | Wrong assumption (human) |
+| 23 Nov | Idempotency tests (2) | Kept | Both passed first time. Same key + same params returns the same PaymentIntent (no double charge). Same key + different amount returns idempotency_error with HTTP 400 — the 400 was confirmed by running, not found in the docs. | — |
 
 ## Weekly metrics
 
