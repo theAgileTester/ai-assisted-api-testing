@@ -59,6 +59,10 @@ This log records what the AI got right, what had to be fixed, and why.
 | 23 Nov | Stripe: customer tests key handling | Fixed | The customer tests from 16 Nov still passed the raw key to each test, so a failure could print it. Switched to the same session fixture as the payment tests. | Secret exposure |
 | 23 Nov | My expected results for idempotency | Fixed | I guessed a repeat request would return an error; Stripe docs say it returns the same result. 1 of my 3 guesses was right — expected results must come from the docs. | Wrong assumption (human) |
 | 23 Nov | Idempotency tests (2) | Kept | Both passed first time. Same key + same params returns the same PaymentIntent (no double charge). Same key + different amount returns idempotency_error with HTTP 400 — the 400 was confirmed by running, not found in the docs. | — |
+| 24 Nov | Refund tests: full + partial (AI) | Kept | Both passed. AI's 2 assumptions (card refunds succeed at once in test mode; refunded total lives on the charge) were confirmed by running. | — |
+| 24 Nov | Refund edge cases: over-refund + partial refunds above the payment | Kept | Both rejected with HTTP 400, nothing extra refunded. Docs say these error, but don't give the HTTP code — confirmed by running. | — |
+| 24 Nov | Refund edge-case expected results | — | Written by AI from Stripe docs (tester asked), not by me. | — |
+| 24 Nov | First run of refund tests | Fixed | A new test was pasted inside another test (indentation), so only 3 tests ran and one failed for the wrong reason. Copy-paste error, not a Stripe or AI bug. | Setup |
 
 ## Weekly metrics
 
