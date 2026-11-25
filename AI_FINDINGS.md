@@ -63,6 +63,9 @@ This log records what the AI got right, what had to be fixed, and why.
 | 24 Nov | Refund edge cases: over-refund + partial refunds above the payment | Kept | Both rejected with HTTP 400, nothing extra refunded. Docs say these error, but don't give the HTTP code — confirmed by running. | — |
 | 24 Nov | Refund edge-case expected results | — | Written by AI from Stripe docs (tester asked), not by me. | — |
 | 24 Nov | First run of refund tests | Fixed | A new test was pasted inside another test (indentation), so only 3 tests ran and one failed for the wrong reason. Copy-paste error, not a Stripe or AI bug. | Setup |
+| 25 Nov | Error tests: status codes and types (5) | Kept | AI guessed HTTP status and error type correctly in all 5 cases (401, 400, 402). | — |
+| 25 Nov | Error tests: error codes | Fixed | AI invented 2 of 5 error codes (`api_key_invalid`, `invalid_currency`). Stripe sends no code for these errors; the currency error uses `param: currency` instead. | Invented value |
+| 25 Nov | Generic decline token | Open | `pm_card_visa_chargeDeclined` worked, but not yet checked on Stripe's test-cards page. | Unverified source |
 
 ## Weekly metrics
 
