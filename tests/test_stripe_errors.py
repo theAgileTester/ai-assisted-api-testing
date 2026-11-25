@@ -69,7 +69,7 @@ def test_402_generic_card_decline(stripe):
         data={
             "amount": 2000,
             "currency": "gbp",
-            "payment_method": "pm_card_visa_chargeDeclined",  # GUESS: token name not checked on the docs page
+            "payment_method": "pm_card_visa_chargeDeclined",  # Source: https://docs.stripe.com/testing (Generic decline)
             "confirm": "true",
             "automatic_payment_methods[enabled]": "true",
             "automatic_payment_methods[allow_redirects]": "never",
