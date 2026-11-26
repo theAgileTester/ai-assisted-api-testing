@@ -66,6 +66,10 @@ This log records what the AI got right, what had to be fixed, and why.
 | 25 Nov | Error tests: status codes and types (5) | Kept | AI guessed HTTP status and error type correctly in all 5 cases (401, 400, 402). | — |
 | 25 Nov | Error tests: error codes | Fixed | AI invented 2 of 5 error codes (`api_key_invalid`, `invalid_currency`). Stripe sends no code for these errors; the currency error uses `param: currency` instead. | Invented value |
 | 25 Nov | Generic decline token | Kept | `pm_card_visa_chargeDeclined` matches Stripe's test-cards page (Declined payments > PaymentMethods > Generic decline). | — |
+| 26 Nov | PaymentIntent JSON schema (AI, from memory) | Kept | All 17 fields AI listed exist in a real response — none invented. | — |
+| 26 Nov | PaymentIntent JSON schema: missing fields | Fixed | AI missed 28 of 45 real fields (38% field coverage), including critical ones: `last_payment_error`, `next_action`, `payment_method_types`. | Missing case |
+| 26 Nov | Schema comparison method | Open | Only field names were compared, not types or allowed values. Needs a schema validator (e.g. jsonschema). | Test gap |
+| 26 Nov | Creating the schema file | Fixed | Copy-paste lost the opening `{` and later added extra lines after the closing `}`. Fixed by writing the file from the terminal. | Setup |
 
 ## Weekly metrics
 

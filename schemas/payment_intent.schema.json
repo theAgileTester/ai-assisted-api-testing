@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stripe PaymentIntent (drafted by AI from memory, not from docs)",
+  "type": "object",
+  "required": ["id", "object", "amount", "currency", "status", "created", "livemode"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^pi_"},
+    "object": {"const": "payment_intent"},
+    "amount": {"type": "integer", "minimum": 0},
+    "amount_received": {"type": "integer", "minimum": 0},
+    "currency": {"type": "string", "pattern": "^[a-z]{3}$"},
+    "status": {
+      "enum": ["requires_payment_method", "requires_confirmation", "requires_action",
+               "processing", "requires_capture", "canceled", "succeeded"]
+    },
+    "customer": {"type": ["string", "null"]},
+    "payment_method": {"type": ["string", "null"]},
+    "description": {"type": ["string", "null"]},
+    "metadata": {"type": "object"},
+    "client_secret": {"type": ["string", "null"]},
+    "capture_method": {"enum": ["automatic", "automatic_async", "manual"]},
+    "confirmation_method": {"enum": ["automatic", "manual"]},
+    "latest_charge": {"type": ["string", "null"]},
+    "receipt_email": {"type": ["string", "null"]},
+    "created": {"type": "integer"},
+    "livemode": {"type": "boolean"}
+  }
+}
